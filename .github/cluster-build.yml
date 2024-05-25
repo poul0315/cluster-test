@@ -1,0 +1,89 @@
+name: CICD to cluster
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository 
+        uses: actions/checkout@v2
+
+
+      - name: Build Docker image 
+        run: |
+          docker build -t my-app:${{ github.sha }} .
+
+
+      - name: Save Docker image
+        run: |
+          docker save my-app:${{ github.sha }} | gzip > my-app.tar.gz
+
+
+      # Copying image to each node
+      - name: Copy Docker image to Worker Node 2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.WORKER2_HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: "./my-app.tar.gz"
+          target: "/home/${{ secrets.USERNAME }}/my-app.tar.gz"
+
+      - name: Copy Docker image to Worker Node 3
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.WORKER3_HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: "./my-app.tar.gz"
+          target: "/home/${{ secrets.USERNAME }}/my-app.tar.gz"
+
+      - name: Copy Docker image to Worker Node 4
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.WORKER4_HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: "./my-app.tar.gz"
+          target: "/home/${{ secrets.USERNAME }}/my-app.tar.gz"
+
+
+      # Loading copied image to each worker node
+      - name: Load Docker image on Worker Node 2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.WORKER2_HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            docker load < /home/${{ secrets.USERNAME }}/my-app.tar.gz
+
+      - name: Load Docker image on Worker Node 3
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.WORKER3_HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            docker load < /home/${{ secrets.USERNAME }}/my-app.tar.gz
+
+      - name: Load Docker image on Worker Node 4
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.WORKER4_HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            docker load < /home/${{ secrets.USERNAME }}/my-app.tar.gz
+
+      - name: SSH to Master Node and Update Kubernetes Deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.MASTER_HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            kubectl set image deployment/my-app-deployment my-app-container=my-app:${{ github.sha }}
