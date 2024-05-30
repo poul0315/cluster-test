@@ -22,9 +22,14 @@ jobs:
       - name: Login to DockerHub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
+      - name: Debug Docker Username and Tagging
+        run: |
+          echo "Docker Username: ${{ secrets.DOCKER_USERNAME }}"
+          echo "Tag Command: docker tag $IMAGE_NAME:$TAG ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG"
+          docker tag $IMAGE_NAME:$TAG ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG
+
       - name: Push Docker image to DockerHub
         run: |
-          docker tag $IMAGE_NAME:$TAG ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG
           docker push ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG
 
       - name: Deploy to Kubernetes
