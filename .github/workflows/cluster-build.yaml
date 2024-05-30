@@ -62,7 +62,6 @@ jobs:
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             echo "Pulling image ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG"
             docker pull ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG
-            docker tag ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG $IMAGE_NAME:$TAG
 
       - name: Cleanup Old Docker Images
         uses: appleboy/ssh-action@master
