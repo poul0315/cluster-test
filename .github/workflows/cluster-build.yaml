@@ -15,6 +15,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Debug Image Name and Tag Before Build
+        run: |
+          echo "Docker Username: ${{ secrets.DOCKER_USERNAME }}"
+          echo "Image Name: $IMAGE_NAME"
+          echo "Tag: $TAG"
+
       - name: Build Docker image
         run: |
           docker build -t $IMAGE_NAME:$TAG .
