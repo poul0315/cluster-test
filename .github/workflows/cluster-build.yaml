@@ -28,15 +28,10 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG
 
       - name: Deploy to Kubernetes
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.MASTER_HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          script: |
-            sudo kubectl apply -f k8s/deployment.yaml
-            sudo kubectl apply -f k8s/service.yaml
-            sudo kubectl set image deployment/my-app-deployment my-app-container=${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG
+        run : |
+          sudo kubectl apply -f k8s/deployment.yaml
+          sudo kubectl apply -f k8s/service.yaml
+          sudo kubectl set image deployment/my-app-deployment my-app-container=${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG
 
   distribute-images:
     needs: build-and-deploy
