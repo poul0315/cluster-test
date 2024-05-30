@@ -43,15 +43,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node:
-          - { name: "worker2", host: ${{ secrets.WORKER2_HOST }} }
-          - { name: "worker3", host: ${{ secrets.WORKER3_HOST }} }
-          - { name: "worker4", host: ${{ secrets.WORKER4_HOST }} }
+        host: [ ${{ secrets.WORKER2_HOST }}, ${{ secrets.WORKER3_HOST }}, ${{ secrets.WORKER4_HOST }} ]
     steps:
       - name: SSH and Pull Docker Image on Worker Node
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ matrix.node.host }}
+          host: ${{ matrix.host }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
@@ -62,7 +59,7 @@ jobs:
       - name: Cleanup Old Docker Images
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ matrix.node.host }}
+          host: ${{ matrix.host }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
