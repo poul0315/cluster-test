@@ -10,9 +10,6 @@ jobs:
     env:
       IMAGE_NAME: my-app
       TAG: ${{ github.sha }}
-      WORKER2_HOST: ${{ secrets.WORKER2_HOST }}
-      WORKER3_HOST: ${{ secrets.WORKER3_HOST }}
-      WORKER4_HOST: ${{ secrets.WORKER4_HOST }}
   
     steps:
       - name: Checkout repository
@@ -46,12 +43,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        host: [ "${{ env.WORKER2_HOST }}", "${{ env.WORKER3_HOST }}", "${{ env.WORKER4_HOST }}" ]
+        host: [ "WORKER2_HOST", "WORKER3_HOST", "WORKER4_HOST" ]
     steps:
       - name: SSH and Pull Docker Image on Worker Node
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ matrix.host }}
+          host: ${{ secrets[matrix.host] }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
@@ -62,7 +59,7 @@ jobs:
       - name: Cleanup Old Docker Images
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ matrix.host }}
+          host: ${{ secrets[matrix.host] }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
