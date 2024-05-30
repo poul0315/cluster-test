@@ -40,6 +40,12 @@ jobs:
       matrix:
         host: [ "WORKER2_HOST", "WORKER3_HOST", "WORKER4_HOST" ]
     steps:
+      - name: Debug Image Name and Tag
+        run: |
+          echo "Docker Username: ${{ secrets.DOCKER_USERNAME }}"
+          echo "Image Name: $IMAGE_NAME"
+          echo "Tag: $TAG"
+
       - name: SSH and Pull Docker Image on Worker Node
         uses: appleboy/ssh-action@master
         with:
@@ -48,6 +54,7 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            echo "Pulling image ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG"
             docker pull ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG
             docker tag ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG $IMAGE_NAME:$TAG
 
