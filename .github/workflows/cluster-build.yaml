@@ -43,7 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [${{ secrets.WORKER2_HOST }}, ${{ secrets.WORKER3_HOST }}, ${{ secrets.WORKER4_HOST }}]
+        node:
+          - ${{ secrets.WORKER2_HOST }}
+          - ${{ secrets.WORKER3_HOST }}
+          - ${{ secrets.WORKER4_HOST }}
     steps:
       - name: SSH and Pull Docker Image on Worker Node
         uses: appleboy/ssh-action@master
