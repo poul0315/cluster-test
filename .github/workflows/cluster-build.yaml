@@ -61,12 +61,11 @@ jobs:
           host: ${{ secrets[matrix.host] }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          envs: 
-            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-            IMAGE_NAME: ${{ env.IMAGE_NAME }}
-            TAG: ${{ env.TAG }}
           script: |
+            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+            TAG=${{ env.TAG }}
             echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
             FULL_IMAGE_NAME="$DOCKER_USERNAME/$IMAGE_NAME:$TAG"
             echo "Pulling image $FULL_IMAGE_NAME"
@@ -78,9 +77,8 @@ jobs:
           host: ${{ secrets[matrix.host] }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          envs: 
-            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-            IMAGE_NAME: ${{ env.IMAGE_NAME }}
-            TAG: ${{ env.TAG }}
           script: |
+            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+            TAG=${{ env.TAG }}
             docker images -a | grep "$DOCKER_USERNAME/$IMAGE_NAME" | grep -v $TAG | awk '{print $3}' | xargs docker rmi -f
