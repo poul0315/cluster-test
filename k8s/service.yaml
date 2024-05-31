@@ -8,6 +8,6 @@ spec:
     app: my-app
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 3000       # the port that the service will expose
+      targetPort: 3000 # the port on the container to which the traffic will be directed
   type: LoadBalancer
